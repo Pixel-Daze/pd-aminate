@@ -11,10 +11,11 @@ function heart() {
     // 线开始的颜色
     var startColor = 'rgba(255, 255, 255, 0.7)';
     // 线结束的颜色
-    var endColor = 'rgb(0, 0, 255)';
+    var endColor = '#fc909c';
     // 阴影的颜色
     var shadowColor = 'rgba(255, 255, 255, 0.5)';
     // 设置画布宽度
+    console.log(width)
     canvas.width = width;
     // 设置画布高度
     canvas.height = height;
@@ -24,7 +25,63 @@ function heart() {
     // 保存所有点的坐标的数组
     var pointArr = getAllPoints();
 
+    var index = 0;
+    var index2 = 0;
+    var interval = 3;
 
+    /**
+     * @desc 根据点的坐标，画出心形线,产生动画效果
+     */
+    var draw = function(){
+        /* index2 > pointArr.length - 2 + interval 时，说明两种颜色的线都画完了，结束函数 */
+        if(index2 > pointArr.length - 2 + interval){ return ; }
+        // 两条线条交汇时，创建圆形边角
+        context.lineJoin = "round";
+        // 绘制圆形的结束线帽
+        context.lineCap = "round";
+        // 阴影颜色
+        context.shadowColor = shadowColor;
+        // 阴影扩散
+        context.shadowBlur = 10;
+        if(index2 >= interval){
+            context.beginPath();
+            context.strokeStyle = endColor;
+            drawLine( index2 - interval, pointArr, context)
+        }
+
+        if(index > pointArr.length - 2){
+            index2++;
+            window.requestAnimationFrame(draw);
+            return;
+        }
+
+        context.beginPath();
+        context.strokeStyle = startColor;
+        drawLine(index, pointArr, context);
+
+        index++;
+        index2++;
+        window.requestAnimationFrame(draw);
+    }
+
+    
+
+    window.requestAnimationFrame(draw);
+}
+
+/**
+  * @desc 画一条线的函数
+  */
+function drawLine(index, pointArr, context) {
+    var x1 = pointArr[index][0];
+    var y1 = pointArr[index][1];
+    var x2 = pointArr[index + 1][0];
+    var y2 = pointArr[index + 1][1];
+    // 点移动到x1,y1
+    context.moveTo(x1, y1);
+    // lineTo() 方法x2,y2点，连线上一个点到该点
+    context.lineTo(x2, y2);
+    context.stroke();
 }
 
 /**
